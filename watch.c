@@ -7,7 +7,7 @@ int WatchIconProc(WINDOW wnd, MESSAGE msg, PARAM p1, PARAM p2)
     int rtn, i;
 	static int tick = 0;
 	static char *hands[] = {
-		" À ", " Ú ", " ¿ ", " Ù "
+		" \xc0 ", " \xda ", " \xbf ", " \xd9 "
 	};
     switch (msg)    {
         case CREATE_WINDOW:
@@ -29,7 +29,7 @@ int WatchIconProc(WINDOW wnd, MESSAGE msg, PARAM p1, PARAM p2)
             return TRUE;
         case BORDER:
             rtn = DefaultWndProc(wnd, msg, p1, p2);
-            writeline(wnd, "Í", 2, 0, FALSE);
+            writeline(wnd, "\xcd", 2, 0, FALSE);
             return rtn;
         case MOUSE_MOVED:
             SendMessage(wnd, HIDE_WINDOW, 0, 0);

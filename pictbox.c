@@ -7,48 +7,48 @@ typedef struct    {
     RECT rc;
 } VECT;
 
-unsigned char CharInWnd[] = "ƒ≥⁄øŸ¿≈√¥¡¬";
+unsigned char CharInWnd[] = "\xc4\xb3\xda\xbf\xd9\xc0\xc5\xc3\xb4\xc1\xc2";
 
 unsigned char VectCvt[3][11][2][4] = {
     {   /* --- first character in collision vector --- */
-        /* ( drawing ƒ ) ( drawing ≥ ) */
-             {{"ƒƒƒ"},     {"⁄√¿"}},
-             {{"⁄¬ø"},     {"≥≥≥"}},
-             {{"⁄¬¬"},     {"⁄√√"}},
-             {{"øøø"},     {"øøø"}},
-             {{"ŸŸŸ"},     {"ŸŸŸ"}},
-             {{"¿¡¡"},     {"√√¿"}},
-             {{"≈≈≈"},     {"≈≈≈"}},
-             {{"√≈≈"},     {"√√√"}},
-             {{"¥¥¥"},     {"¥¥¥"}},
-             {{"¡¡¡"},     {"¡¡¡"}},
-             {{"¬¬¬"},     {"¬≈≈"}}    },
+        /* ( drawing \xc4 ) ( drawing \xb3 ) */
+             {{"\xc4\xc4\xc4"},     {"\xda\xc3\xc0"}},
+             {{"\xda\xc2\xbf"},     {"\xb3\xb3\xb3"}},
+             {{"\xda\xc2\xc2"},     {"\xda\xc3\xc3"}},
+             {{"\xbf\xbf\xbf"},     {"\xbf\xbf\xbf"}},
+             {{"\xd9\xd9\xd9"},     {"\xd9\xd9\xd9"}},
+             {{"\xc0\xc1\xc1"},     {"\xc3\xc3\xc0"}},
+             {{"\xc5\xc5\xc5"},     {"\xc5\xc5\xc5"}},
+             {{"\xc3\xc5\xc5"},     {"\xc3\xc3\xc3"}},
+             {{"\xb4\xb4\xb4"},     {"\xb4\xb4\xb4"}},
+             {{"\xc1\xc1\xc1"},     {"\xc1\xc1\xc1"}},
+             {{"\xc2\xc2\xc2"},     {"\xc2\xc5\xc5"}}    },
     {   /* --- middle character in collision vector --- */
-        /* ( drawing ƒ ) ( drawing ≥ ) */
-             {{"ƒƒƒ"},     {"¬≈¡"}},
-             {{"√≈¥"},     {"≥≥≥"}},
-             {{"⁄⁄⁄"},     {"⁄⁄⁄"}},
-             {{"øøø"},     {"øøø"}},
-             {{"ŸŸŸ"},     {"ŸŸŸ"}},
-             {{"¿¿¿"},     {"¿¿¿"}},
-             {{"≈≈≈"},     {"≈≈≈"}},
-             {{"√√√"},     {"√√√"}},
-             {{"≈≈¥"},     {"¥¥¥"}},
-             {{"¡¡¡"},     {"≈≈¡"}},
-             {{"¬¬¬"},     {"¬¬¬"}}    },
+        /* ( drawing \xc4 ) ( drawing \xb3 ) */
+             {{"\xc4\xc4\xc4"},     {"\xc2\xc5\xc1"}},
+             {{"\xc3\xc5\xb4"},     {"\xb3\xb3\xb3"}},
+             {{"\xda\xda\xda"},     {"\xda\xda\xda"}},
+             {{"\xbf\xbf\xbf"},     {"\xbf\xbf\xbf"}},
+             {{"\xd9\xd9\xd9"},     {"\xd9\xd9\xd9"}},
+             {{"\xc0\xc0\xc0"},     {"\xc0\xc0\xc0"}},
+             {{"\xc5\xc5\xc5"},     {"\xc5\xc5\xc5"}},
+             {{"\xc3\xc3\xc3"},     {"\xc3\xc3\xc3"}},
+             {{"\xc5\xc5\xb4"},     {"\xb4\xb4\xb4"}},
+             {{"\xc1\xc1\xc1"},     {"\xc5\xc5\xc1"}},
+             {{"\xc2\xc2\xc2"},     {"\xc2\xc2\xc2"}}    },
     {   /* --- last character in collision vector --- */
-        /* ( drawing ƒ ) ( drawing ≥ ) */
-             {{"ƒƒƒ"},     {"ø¥Ÿ"}},
-             {{"¿¡Ÿ"},     {"≥≥≥"}},
-             {{"⁄⁄⁄"},     {"⁄⁄⁄"}},
-             {{"¬¬ø"},     {"ø¥¥"}},
-             {{"¡¡Ÿ"},     {"¥¥Ÿ"}},
-             {{"¿¿¿"},     {"¿¿¿"}},
-             {{"≈≈≈"},     {"≈≈≈"}},
-             {{"√√√"},     {"√√√"}},
-             {{"≈≈¥"},     {"¥¥¥"}},
-             {{"¡¡¡"},     {"≈≈¡"}},
-             {{"¬¬¬"},     {"¬¬¬"}}    }
+        /* ( drawing \xc4 ) ( drawing \xb3 ) */
+             {{"\xc4\xc4\xc4"},     {"\xbf\xb4\xd9"}},
+             {{"\xc0\xc1\xd9"},     {"\xb3\xb3\xb3"}},
+             {{"\xda\xda\xda"},     {"\xda\xda\xda"}},
+             {{"\xc2\xc2\xbf"},     {"\xbf\xb4\xb4"}},
+             {{"\xc1\xc1\xd9"},     {"\xb4\xb4\xd9"}},
+             {{"\xc0\xc0\xc0"},     {"\xc0\xc0\xc0"}},
+             {{"\xc5\xc5\xc5"},     {"\xc5\xc5\xc5"}},
+             {{"\xc3\xc3\xc3"},     {"\xc3\xc3\xc3"}},
+             {{"\xc5\xc5\xb4"},     {"\xb4\xb4\xb4"}},
+             {{"\xc1\xc1\xc1"},     {"\xc5\xc5\xc1"}},
+             {{"\xc2\xc2\xc2"},     {"\xc2\xc2\xc2"}}    }
 };
 
 /* -- compute whether character is first, middle, or last -- */
@@ -106,13 +106,13 @@ static void PaintVector(WINDOW wnd, RECT rc)
 
     if (rc.rt == rc.lf)    {
         /* ------ vertical vector ------- */
-        nc = '≥';
+        nc = '\xb3';
         vertvect = 1;
         len = rc.bt-rc.tp+1;
     }
     else     {
         /* ------ horizontal vector ------- */
-        nc = 'ƒ';
+        nc = '\xc4';
         vertvect = 0;
         len = rc.rt-rc.lf+1;
     }
@@ -149,7 +149,7 @@ static void PaintBar(WINDOW wnd, RECT rc, enum VectTypes vt)
 {
     int i, vertbar, len;
     unsigned int tys[] = {219, 178, 177, 176};
-/*    unsigned int tys[] = {'€', '≤', '±', '∞'};
+/*    unsigned int tys[] = {'\xdb', '\xb2', '\xb1', '\xb0'};
 */
     unsigned int nc = tys[vt-1];
 

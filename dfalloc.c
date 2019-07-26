@@ -9,9 +9,9 @@ static void AllocationError(void)
 	extern jmp_buf AllocError;
 	extern BOOL AllocTesting;
 	static char *ErrMsg[] = {
-		"旼컴컴컴컴컴컴컴커",
-		"� Out of Memory! �",
-		"읕컴컴컴컴컴컴컴켸"
+		"\xda\xc4\xc4\xc4\xc4\xc4\xc4\xc4\xc4\xc4\xc4\xc4\xc4\xc4\xc4\xc4\xc4\xbf",
+		"\xb3 Out of Memory! \xb3",
+		"\xc0\xc4\xc4\xc4\xc4\xc4\xc4\xc4\xc4\xc4\xc4\xc4\xc4\xc4\xc4\xc4\xc4\xd9"
 	};
 	int x, y;
 	char savbuf[108];

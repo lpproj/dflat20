@@ -156,13 +156,13 @@ static int MemoPadProc(WINDOW wnd,MESSAGE msg,PARAM p1,PARAM p2)
                 case ID_ABOUT:
                     MessageBox(
                          "About D-Flat and the MemoPad",
-                        "   ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿\n"
-                        "   ³    ÜÜÜ   ÜÜÜ     Ü    ³\n"
-                        "   ³    Û  Û  Û  Û    Û    ³\n"
-                        "   ³    Û  Û  Û  Û    Û    ³\n"
-                        "   ³    Û  Û  Û  Û Û  Û    ³\n"
-                        "   ³    ßßß   ßßß   ßß     ³\n"
-                        "   ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ\n"
+                        "   \xda\xc4\xc4\xc4\xc4\xc4\xc4\xc4\xc4\xc4\xc4\xc4\xc4\xc4\xc4\xc4\xc4\xc4\xc4\xc4\xc4\xc4\xc4\xc4\xbf\n"
+                        "   \xb3    \xdc\xdc\xdc   \xdc\xdc\xdc     \xdc    \xb3\n"
+                        "   \xb3    \xdb  \xdb  \xdb  \xdb    \xdb    \xb3\n"
+                        "   \xb3    \xdb  \xdb  \xdb  \xdb    \xdb    \xb3\n"
+                        "   \xb3    \xdb  \xdb  \xdb  \xdb \xdb  \xdb    \xb3\n"
+                        "   \xb3    \xdf\xdf\xdf   \xdf\xdf\xdf   \xdf\xdf     \xb3\n"
+                        "   \xc0\xc4\xc4\xc4\xc4\xc4\xc4\xc4\xc4\xc4\xc4\xc4\xc4\xc4\xc4\xc4\xc4\xc4\xc4\xc4\xc4\xc4\xc4\xc4\xd9\n"
                         "D-Flat implements the SAA/CUA\n"
                         "interface in a public domain\n"
                         "C language library originally\n"
