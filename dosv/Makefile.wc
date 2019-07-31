@@ -1,0 +1,282 @@
+# 
+# Makefile for (Open)Watcom with wmake
+
+# srcdir
+SDIR  = ..
+# srcdir for platform-specific: ($srcdir/platform)
+SPDIR = .
+
+#
+CC = *wcl
+CFLAGS = -wcd=1180 -wcd=1181 -bt=dos -zq -s -j -ml -os -I$(SPDIR) -I$(SDIR) -DWATCOM -DTESTING_DFLAT -DBUILD_FULL_DFLAT -DDOSV -DDBCS
+LD = *wcl
+LDFLAGS = -zq -ml -l=dos -"op stack=5120"
+
+!ifdef __UNIX__
+D=/
+O=obj
+!else
+D=\
+
+O=obj
+!endif
+
+SPATH = $(SDIR)$(D)
+SPPATH= $(SPDIR)$(D)
+
+OPATH = .$(D)
+
+RM = rm
+
+.c.$(O):
+	$(CC) $(CFLAGS) -c -o$@ $<
+
+.cpp.$(O):
+	$(CC) $(CFLAGS) -c -o$@ $<
+
+COMPILE = $(CC) $(CFLAGS) -c -Fo=$@
+
+
+#
+
+LIBDFLAT = $(OPATH)dflat.lib
+
+SRC_VIDEO = $(SPPATH)vid_tv.c
+OBJ_VIDEO = $(OPATH)video.$(O)
+
+OBJS_1 = $(OPATH)window.$(O) $(OPATH)message.$(O) $(OPATH)mouse.$(O)
+OBJS_2 = $(OPATH)console.$(O) $(OPATH)textbox.$(O) $(OPATH)listbox.$(O)
+OBJS_3 = $(OPATH)normal.$(O) $(OPATH)config.$(O) $(OPATH)menu.$(O)
+OBJS_4 = $(OPATH)menubar.$(O) $(OPATH)popdown.$(O) $(OPATH)rect.$(O)
+OBJS_5 = $(OPATH)applicat.$(O) $(OPATH)keys.$(O) $(OPATH)sysmenu.$(O)
+OBJS_6 = $(OPATH)editbox.$(O) $(OPATH)dialbox.$(O) $(OPATH)button.$(O)
+OBJS_7 = $(OPATH)fileopen.$(O) $(OPATH)msgbox.$(O) $(OPATH)helpbox.$(O)
+OBJS_8 = $(OPATH)log.$(O) $(OPATH)lists.$(O) $(OPATH)statbar.$(O)
+OBJS_9 = $(OPATH)decomp.$(O) $(OPATH)combobox.$(O) $(OPATH)pictbox.$(O)
+OBJS_10 = $(OPATH)calendar.$(O) $(OPATH)barchart.$(O) $(OPATH)clipbord.$(O)
+OBJS_11 = $(OPATH)search.$(O) $(OPATH)dfalloc.$(O) $(OPATH)checkbox.$(O)
+OBJS_12 = $(OPATH)text.$(O) $(OPATH)radio.$(O) $(OPATH)box.$(O)
+OBJS_13 = $(OPATH)spinbutt.$(O) $(OPATH)watch.$(O) $(OPATH)slidebox.$(O)
+OBJS_14 = $(OPATH)direct.$(O) $(OPATH)editor.$(O)
+
+#OBJS_DBCS = $(OPATH)graphchr.obj
+
+OBJS_DFLAT = &
+	$(OBJS_1) $(OBJS_2) $(OBJS_3) $(OBJS_4) $(OBJS_5) &
+	$(OBJS_6) $(OBJS_7) $(OBJS_8) $(OBJS_9) $(OBJS_10) &
+	$(OBJS_11) $(OBJS_12) $(OBJS_13) $(OBJS_14) &
+	$(OBJS_DBCS) &
+	$(OBJ_VIDEO)
+
+OBJS_MEMOPAD = &
+	$(OPATH)memopad.$(O) &
+	$(OPATH)dialogs.$(O) &
+	$(OPATH)menus.$(O)
+
+OBJS_HUFFC = &
+	$(OPATH)huffc.$(O) &
+	$(OPATH)htree.$(O)
+
+OBJS_FIXHELP = &
+	$(OPATH)fixhelp.$(O) &
+	$(OPATH)fh_dcmp.$(O)
+
+memopad.exe: $(OBJS_MEMOPAD) $(LIBDFLAT)
+	$(LD) $(LDFLAGS) -Fe=$@ $(OBJS_MEMOPAD) $(LIBDFLAT) $(LDFLAGS)
+
+memopad.hlp: $(OPATH)fixhelp.exe $(OPATH)huffc.exe $(SPATH)memopad.txt
+	$(OPATH)huffc.exe $(SPATH)memopad.txt memopad.hlp
+	$(OPATH)fixhelp.exe memopad
+
+$(LIBDFLAT) : $(OBJS_DFLAT) $(SPATH)dflat.lbc $(SPATH)dflat_d.lbc
+	wlib -n -q -c $@ @$(SPATH)dflat_d.lbc @$(SPATH)dflat.lbc
+
+
+$(OPATH)huffc.exe: $(OBJS_HUFFC)
+	$(LD) $(LDFLAGS) -Fe=$@ $(OBJS_HUFFC)
+
+$(OPATH)fixhelp.exe: $(OBJS_FIXHELP)
+	$(LD) $(LDFLAGS) -Fe=$@ $(OBJS_FIXHELP)
+
+
+clean: .SYMBOLIC
+	-$(RM) $(OPATH)*.$(O)
+	-$(RM) $(OPATH)*.err
+	-$(RM) $(LIBDFLAT) memopad.exe
+
+
+clean_help:
+	-$(RM) huffc.exe fixhelp.exe
+	-$(RM) memopad.hlp
+
+# OBJS_DFLAT
+# -----------------------------
+
+$(OBJ_VIDEO): $(SRC_VIDEO)
+	$(COMPILE) $(SRC_VIDEO)
+
+
+$(OPATH)window.$(O): $(SPATH)window.c
+	$(COMPILE) $(SPATH)window.c
+
+$(OPATH)message.$(O): $(SPATH)message.c
+	$(COMPILE) $(SPATH)message.c
+
+$(OPATH)mouse.$(O): $(SPATH)mouse.c
+	$(COMPILE) $(SPATH)mouse.c
+
+$(OPATH)console.$(O): $(SPATH)console.c
+	$(COMPILE) $(SPATH)console.c
+
+$(OPATH)textbox.$(O): $(SPATH)textbox.c
+	$(COMPILE) $(SPATH)textbox.c
+
+$(OPATH)listbox.$(O): $(SPATH)listbox.c
+	$(COMPILE) $(SPATH)listbox.c
+
+$(OPATH)normal.$(O): $(SPATH)normal.c
+	$(COMPILE) $(SPATH)normal.c
+
+$(OPATH)config.$(O): $(SPATH)config.c
+	$(COMPILE) $(SPATH)config.c
+
+$(OPATH)menu.$(O): $(SPATH)menu.c
+	$(COMPILE) $(SPATH)menu.c
+
+$(OPATH)menubar.$(O): $(SPATH)menubar.c
+	$(COMPILE) $(SPATH)menubar.c
+
+$(OPATH)popdown.$(O): $(SPATH)popdown.c
+	$(COMPILE) $(SPATH)popdown.c
+
+$(OPATH)rect.$(O): $(SPATH)rect.c
+	$(COMPILE) $(SPATH)rect.c
+
+$(OPATH)applicat.$(O): $(SPATH)applicat.c
+	$(COMPILE) $(SPATH)applicat.c
+
+$(OPATH)keys.$(O): $(SPATH)keys.c
+	$(COMPILE) $(SPATH)keys.c
+
+$(OPATH)sysmenu.$(O): $(SPATH)sysmenu.c
+	$(COMPILE) $(SPATH)sysmenu.c
+
+$(OPATH)editbox.$(O): $(SPATH)editbox.c
+	$(COMPILE) $(SPATH)editbox.c
+
+$(OPATH)dialbox.$(O): $(SPATH)dialbox.c
+	$(COMPILE) $(SPATH)dialbox.c
+
+$(OPATH)button.$(O): $(SPATH)button.c
+	$(COMPILE) $(SPATH)button.c
+
+$(OPATH)fileopen.$(O): $(SPATH)fileopen.c
+	$(COMPILE) $(SPATH)fileopen.c
+
+$(OPATH)msgbox.$(O): $(SPATH)msgbox.c
+	$(COMPILE) $(SPATH)msgbox.c
+
+$(OPATH)helpbox.$(O): $(SPATH)helpbox.c
+	$(COMPILE) $(SPATH)helpbox.c
+
+$(OPATH)log.$(O): $(SPATH)log.c
+	$(COMPILE) $(SPATH)log.c
+
+$(OPATH)lists.$(O): $(SPATH)lists.c
+	$(COMPILE) $(SPATH)lists.c
+
+$(OPATH)statbar.$(O): $(SPATH)statbar.c
+	$(COMPILE) $(SPATH)statbar.c
+
+$(OPATH)decomp.$(O): $(SPATH)decomp.c
+	$(COMPILE) $(SPATH)decomp.c
+
+$(OPATH)combobox.$(O): $(SPATH)combobox.c
+	$(COMPILE) $(SPATH)combobox.c
+
+$(OPATH)pictbox.$(O): $(SPATH)pictbox.c
+	$(COMPILE) $(SPATH)pictbox.c
+
+$(OPATH)calendar.$(O): $(SPATH)calendar.c
+	$(COMPILE) $(SPATH)calendar.c
+
+$(OPATH)barchart.$(O): $(SPATH)barchart.c
+	$(COMPILE) $(SPATH)barchart.c
+
+$(OPATH)clipbord.$(O): $(SPATH)clipbord.c
+	$(COMPILE) $(SPATH)clipbord.c
+
+$(OPATH)search.$(O): $(SPATH)search.c
+	$(COMPILE) $(SPATH)search.c
+
+$(OPATH)dfalloc.$(O): $(SPATH)dfalloc.c
+	$(COMPILE) $(SPATH)dfalloc.c
+
+$(OPATH)checkbox.$(O): $(SPATH)checkbox.c
+	$(COMPILE) $(SPATH)checkbox.c
+
+$(OPATH)text.$(O): $(SPATH)text.c
+	$(COMPILE) $(SPATH)text.c
+
+$(OPATH)radio.$(O): $(SPATH)radio.c
+	$(COMPILE) $(SPATH)radio.c
+
+$(OPATH)box.$(O): $(SPATH)box.c
+	$(COMPILE) $(SPATH)box.c
+
+$(OPATH)spinbutt.$(O): $(SPATH)spinbutt.c
+	$(COMPILE) $(SPATH)spinbutt.c
+
+$(OPATH)watch.$(O): $(SPATH)watch.c
+	$(COMPILE) $(SPATH)watch.c
+
+$(OPATH)slidebox.$(O): $(SPATH)slidebox.c
+	$(COMPILE) $(SPATH)slidebox.c
+
+$(OPATH)direct.$(O): $(SPATH)direct.c
+	$(COMPILE) $(SPATH)direct.c
+
+$(OPATH)editor.$(O): $(SPATH)editor.c
+	$(COMPILE) $(SPATH)editor.c
+
+
+# OBJS_DBCS
+# -----------------------------
+
+$(OPATH)graphchr.obj: $(SPATH)graphchr.c
+	$(COMPILE) $(SPATH)graphchr.c
+
+
+# OBJS_MEMOPAD
+# -----------------------------
+
+$(OPATH)memopad.$(O): $(SPATH)memopad.c
+	$(COMPILE) $(SPATH)memopad.c
+
+$(OPATH)dialogs.$(O): $(SPATH)dialogs.c
+	$(COMPILE) $(SPATH)dialogs.c
+
+$(OPATH)menus.$(O): $(SPATH)menus.c
+	$(COMPILE) $(SPATH)menus.c
+
+
+# OBJS_HUFFC
+# -----------------------------
+
+$(OPATH)huffc.$(O): $(SPATH)huffc.c
+	$(COMPILE) $(SPATH)huffc.c
+
+$(OPATH)htree.$(O): $(SPATH)htree.c
+	$(COMPILE) $(SPATH)htree.c
+
+
+# OBJS_FIXHELP
+# -----------------------------
+
+$(OPATH)fixhelp.$(O): $(SPATH)fixhelp.c
+	$(COMPILE) $(SPATH)fixhelp.c
+
+$(OPATH)fh_dcmp.$(O): $(SPATH)decomp.c
+	$(COMPILE) $(SPATH)decomp.c
+
+

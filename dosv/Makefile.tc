@@ -1,0 +1,273 @@
+# 
+# Makefile for Turbo C 2.0/Turbo C++ 1.01 (with Trubo make)
+
+# srcdir
+SDIR  = ..
+# srcdir for platform-specific: ($srcdir/platform)
+SPDIR = .
+
+#
+CC = tcc
+CFLAGS = -I$(SPDIR) -I$(SDIR) @opts.tc -DDOSV -DDBCS
+LD = tcc
+LDFLAGS = -ml -f-
+
+SPATH = $(SDIR)\\
+SPPATH = $(SPDIR)\\
+
+OPATH = .\\
+
+SHELL_C = command /c
+RM = $(SHELL_C) $(SPATH)myrm.bat
+
+.c.obj:
+	$(CC) $(CFLAGS) -c -o$@ $<
+
+.cpp.obj:
+	$(CC) $(CFLAGS) -c -o$@ $<
+
+COMPILE = $(CC) $(CFLAGS) -c -o$<
+
+#
+
+LIBDFLAT = $(OPATH)dflat.lib
+
+SRC_VIDEO = $(SPPATH)vid_tv.c
+OBJ_VIDEO = $(OPATH)video.obj
+
+OBJS_1 = $(OPATH)window.obj $(OPATH)message.obj $(OPATH)mouse.obj
+OBJS_2 = $(OPATH)console.obj $(OPATH)textbox.obj $(OPATH)listbox.obj
+OBJS_3 = $(OPATH)normal.obj $(OPATH)config.obj $(OPATH)menu.obj
+OBJS_4 = $(OPATH)menubar.obj $(OPATH)popdown.obj $(OPATH)rect.obj
+OBJS_5 = $(OPATH)applicat.obj $(OPATH)keys.obj $(OPATH)sysmenu.obj
+OBJS_6 = $(OPATH)editbox.obj $(OPATH)dialbox.obj $(OPATH)button.obj
+OBJS_7 = $(OPATH)fileopen.obj $(OPATH)msgbox.obj $(OPATH)helpbox.obj
+OBJS_8 = $(OPATH)log.obj $(OPATH)lists.obj $(OPATH)statbar.obj
+OBJS_9 = $(OPATH)decomp.obj $(OPATH)combobox.obj $(OPATH)pictbox.obj
+OBJS_10 = $(OPATH)calendar.obj $(OPATH)barchart.obj $(OPATH)clipbord.obj
+OBJS_11 = $(OPATH)search.obj $(OPATH)dfalloc.obj $(OPATH)checkbox.obj
+OBJS_12 = $(OPATH)text.obj $(OPATH)radio.obj $(OPATH)box.obj
+OBJS_13 = $(OPATH)spinbutt.obj $(OPATH)watch.obj $(OPATH)slidebox.obj
+OBJS_14 = $(OPATH)direct.obj $(OPATH)editor.obj
+
+#OBJS_DBCS = $(OPATH)graphchr.obj
+
+OBJS_DFLAT = \
+	$(OBJS_1) $(OBJS_2) $(OBJS_3) $(OBJS_4) $(OBJS_5) \
+	$(OBJS_6) $(OBJS_7) $(OBJS_8) $(OBJS_9) $(OBJS_10) \
+	$(OBJS_11) $(OBJS_12) $(OBJS_13) $(OBJS_14) \
+	$(OBJS_DBCS) \
+	$(OBJ_VIDEO)
+
+OBJS_MEMOPAD = \
+	$(OPATH)memopad.obj \
+	$(OPATH)dialogs.obj \
+	$(OPATH)menus.obj
+
+OBJS_HUFFC = \
+	$(OPATH)huffc.obj \
+	$(OPATH)htree.obj
+
+OBJS_FIXHELP = \
+	$(OPATH)fixhelp.obj \
+	$(OPATH)fh_dcmp.obj
+
+memopad.exe: $(OBJS_MEMOPAD) $(LIBDFLAT)
+	$(LD) $(LDFLAGS) -e$< $(OBJS_MEMOPAD) $(LIBDFLAT)
+
+memopad.hlp: fixhelp.exe huffc.exe $(SPATH)memopad.txt
+	huffc.exe $(SPATH)memopad.txt memopad.hlp
+	fixhelp.exe memopad
+
+huffc.exe: $(OBJS_HUFFC)
+	$(LD) $(LDFLAGS) -e$< $(OBJS_HUFFC)
+
+fixhelp.exe: $(OBJS_FIXHELP)
+	$(LD) $(LDFLAGS) -e$< $(OBJS_FIXHELP)
+
+$(LIBDFLAT) : $(OBJS_DFLAT) $(SPATH)dflat.bld $(SPATH)dflat_d.bld
+	-$(RM) $<
+	tlib /c $< @$(SPATH)dflat_d.bld @$(SPATH)dflat.bld
+
+
+
+clean:
+	-$(RM) $(OPATH)*.obj
+	-$(RM) $(LIBDFLAT) memopad.exe
+
+
+clean_help:
+	-$(RM) huffc.exe fixhelp.exe
+	-$(RM) memopad.hlp
+
+# OBJS_DFLAT
+# -----------------------------
+
+$(OBJ_VIDEO): $(SRC_VIDEO)
+	$(COMPILE) $(SRC_VIDEO)
+
+
+$(OPATH)window.obj: $(SPATH)window.c
+	$(COMPILE) $(SPATH)window.c
+
+$(OPATH)message.obj: $(SPATH)message.c
+	$(COMPILE) $(SPATH)message.c
+
+$(OPATH)mouse.obj: $(SPATH)mouse.c
+	$(COMPILE) $(SPATH)mouse.c
+
+$(OPATH)console.obj: $(SPATH)console.c
+	$(COMPILE) $(SPATH)console.c
+
+$(OPATH)textbox.obj: $(SPATH)textbox.c
+	$(COMPILE) $(SPATH)textbox.c
+
+$(OPATH)listbox.obj: $(SPATH)listbox.c
+	$(COMPILE) $(SPATH)listbox.c
+
+$(OPATH)normal.obj: $(SPATH)normal.c
+	$(COMPILE) $(SPATH)normal.c
+
+$(OPATH)config.obj: $(SPATH)config.c
+	$(COMPILE) $(SPATH)config.c
+
+$(OPATH)menu.obj: $(SPATH)menu.c
+	$(COMPILE) $(SPATH)menu.c
+
+$(OPATH)menubar.obj: $(SPATH)menubar.c
+	$(COMPILE) $(SPATH)menubar.c
+
+$(OPATH)popdown.obj: $(SPATH)popdown.c
+	$(COMPILE) $(SPATH)popdown.c
+
+$(OPATH)rect.obj: $(SPATH)rect.c
+	$(COMPILE) $(SPATH)rect.c
+
+$(OPATH)applicat.obj: $(SPATH)applicat.c
+	$(COMPILE) $(SPATH)applicat.c
+
+$(OPATH)keys.obj: $(SPATH)keys.c
+	$(COMPILE) $(SPATH)keys.c
+
+$(OPATH)sysmenu.obj: $(SPATH)sysmenu.c
+	$(COMPILE) $(SPATH)sysmenu.c
+
+$(OPATH)editbox.obj: $(SPATH)editbox.c
+	$(COMPILE) $(SPATH)editbox.c
+
+$(OPATH)dialbox.obj: $(SPATH)dialbox.c
+	$(COMPILE) $(SPATH)dialbox.c
+
+$(OPATH)button.obj: $(SPATH)button.c
+	$(COMPILE) $(SPATH)button.c
+
+$(OPATH)fileopen.obj: $(SPATH)fileopen.c
+	$(COMPILE) $(SPATH)fileopen.c
+
+$(OPATH)msgbox.obj: $(SPATH)msgbox.c
+	$(COMPILE) $(SPATH)msgbox.c
+
+$(OPATH)helpbox.obj: $(SPATH)helpbox.c
+	$(COMPILE) $(SPATH)helpbox.c
+
+$(OPATH)log.obj: $(SPATH)log.c
+	$(COMPILE) $(SPATH)log.c
+
+$(OPATH)lists.obj: $(SPATH)lists.c
+	$(COMPILE) $(SPATH)lists.c
+
+$(OPATH)statbar.obj: $(SPATH)statbar.c
+	$(COMPILE) $(SPATH)statbar.c
+
+$(OPATH)decomp.obj: $(SPATH)decomp.c
+	$(COMPILE) $(SPATH)decomp.c
+
+$(OPATH)combobox.obj: $(SPATH)combobox.c
+	$(COMPILE) $(SPATH)combobox.c
+
+$(OPATH)pictbox.obj: $(SPATH)pictbox.c
+	$(COMPILE) $(SPATH)pictbox.c
+
+$(OPATH)calendar.obj: $(SPATH)calendar.c
+	$(COMPILE) $(SPATH)calendar.c
+
+$(OPATH)barchart.obj: $(SPATH)barchart.c
+	$(COMPILE) $(SPATH)barchart.c
+
+$(OPATH)clipbord.obj: $(SPATH)clipbord.c
+	$(COMPILE) $(SPATH)clipbord.c
+
+$(OPATH)search.obj: $(SPATH)search.c
+	$(COMPILE) $(SPATH)search.c
+
+$(OPATH)dfalloc.obj: $(SPATH)dfalloc.c
+	$(COMPILE) $(SPATH)dfalloc.c
+
+$(OPATH)checkbox.obj: $(SPATH)checkbox.c
+	$(COMPILE) $(SPATH)checkbox.c
+
+$(OPATH)text.obj: $(SPATH)text.c
+	$(COMPILE) $(SPATH)text.c
+
+$(OPATH)radio.obj: $(SPATH)radio.c
+	$(COMPILE) $(SPATH)radio.c
+
+$(OPATH)box.obj: $(SPATH)box.c
+	$(COMPILE) $(SPATH)box.c
+
+$(OPATH)spinbutt.obj: $(SPATH)spinbutt.c
+	$(COMPILE) $(SPATH)spinbutt.c
+
+$(OPATH)watch.obj: $(SPATH)watch.c
+	$(COMPILE) $(SPATH)watch.c
+
+$(OPATH)slidebox.obj: $(SPATH)slidebox.c
+	$(COMPILE) $(SPATH)slidebox.c
+
+$(OPATH)direct.obj: $(SPATH)direct.c
+	$(COMPILE) $(SPATH)direct.c
+
+$(OPATH)editor.obj: $(SPATH)editor.c
+	$(COMPILE) $(SPATH)editor.c
+
+
+# OBJS_DBCS
+# -----------------------------
+
+$(OPATH)graphchr.obj: $(SPATH)graphchr.c
+	$(COMPILE) $(SPATH)graphchr.c
+
+
+# OBJS_MEMOPAD
+# -----------------------------
+
+$(OPATH)memopad.obj: $(SPATH)memopad.c
+	$(COMPILE) $(SPATH)memopad.c
+
+$(OPATH)dialogs.obj: $(SPATH)dialogs.c
+	$(COMPILE) $(SPATH)dialogs.c
+
+$(OPATH)menus.obj: $(SPATH)menus.c
+	$(COMPILE) $(SPATH)menus.c
+
+
+# OBJS_HUFFC
+# -----------------------------
+
+$(OPATH)huffc.obj: $(SPATH)huffc.c
+	$(COMPILE) $(SPATH)huffc.c
+
+$(OPATH)htree.obj: $(SPATH)htree.c
+	$(COMPILE) $(SPATH)htree.c
+
+
+# OBJS_FIXHELP
+# -----------------------------
+
+$(OPATH)fixhelp.obj: $(SPATH)fixhelp.c
+	$(COMPILE) $(SPATH)fixhelp.c
+
+$(OPATH)fh_dcmp.obj: $(SPATH)decomp.c
+	$(COMPILE) $(SPATH)decomp.c
+
+
