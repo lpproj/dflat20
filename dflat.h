@@ -250,6 +250,7 @@ extern BOOL ClipString;
 extern int CurrentMenuSelection;
 /* --------- space between menubar labels --------- */
 #define MSPACE 2
+#if defined IBMPC
 /* --------------- border characters ------------- */
 #define FOCUS_NW      (unsigned char) '\xc9'
 #define FOCUS_NE      (unsigned char) '\xbb'
@@ -287,6 +288,58 @@ extern int CurrentMenuSelection;
 #define CHANGECOLOR  (unsigned char) 174 /* prefix to change colors  */
 #define RESETCOLOR   (unsigned char) 175 /* reset colors to default  */
 #define LISTSELECTOR   4    /* selected list box entry      */
+/* ------------------ shadow characters ------------------- */
+#define BUTTONSHADOW0  (unsigned char) '\xdc'
+#define BUTTONSHADOW1  (unsigned char) '\xdf'
+/* --------------------- radio button --------------------- */
+#define RADIOBUTTONCHAR (unsigned char) '\x7'
+#else
+# include "graphchr.h"
+  /* border characters */
+# define FOCUS_NW       dfc_dbl_dr
+# define FOCUS_NE       dfc_dbl_dl
+# define FOCUS_SE       dfc_dbl_ul
+# define FOCUS_SW       dfc_dbl_ur
+# define FOCUS_SIDE     dfc_dbl_v
+# define FOCUS_LINE     dfc_dbl_h
+# define NW             dfc_dr
+# define NE             dfc_dl
+# define SE             dfc_ul
+# define SW             dfc_ur
+# define SIDE           dfc_v
+# define LINE           dfc_h
+# define LEDGE          dfc_vr
+# define REDGE          dfc_vl
+# define SIZETOKEN      dfc_sizetoken
+  /* scroll bar characters */
+# define UPSCROLLBOX    dfc_uptriangle
+# define DOWNSCROLLBOX  dfc_downtriangle
+# define LEFTSCROLLBOX  dfc_lefttriangle
+# define RIGHTSCROLLBOX dfc_righttriangle
+# define SCROLLBARCHAR  dfc_scrollbar
+# define SCROLLBOXCHAR  dfc_scrollpos
+  /* menu characters */
+# define CHECKMARK      dfc_menuchecked
+# define CASCADEPOINTER dfc_cascade
+  /* title bar characters */
+# define CONTROLBOXCHAR dfc_controlbox
+# define MAXPOINTER     dfc_max
+# define MINPOINTER     dfc_min
+# define RESTOREPOINTER dfc_restore
+  /* text control characters */
+# define APPLCHAR       dfc_appsbg
+# define SHORTCUTCHAR   '~'
+# define CHANGECOLOR    dfc_setcolor
+# define RESETCOLOR     dfc_resetcolor
+# define LISTSELECTOR   dfc_listselector
+# define pTab           dfc_ptab
+# define sTab           dfc_stab
+  /* block(bar) and shadow chars */
+# define BUTTONSHADOW0  dfc_buttonshadow0
+# define BUTTONSHADOW1  dfc_buttonshadow1
+  /* radio button */
+# define RADIOBUTTONCHAR dfc_radiobutton
+#endif
 /* --------- message prototypes ----------- */
 BOOL init_messages(void);
 void PostMessage(WINDOW, MESSAGE, PARAM, PARAM);

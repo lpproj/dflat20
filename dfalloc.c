@@ -9,9 +9,15 @@ static void AllocationError(void)
 	extern jmp_buf AllocError;
 	extern BOOL AllocTesting;
 	static char *ErrMsg[] = {
+#if defined IBMPC
 		"\xda\xc4\xc4\xc4\xc4\xc4\xc4\xc4\xc4\xc4\xc4\xc4\xc4\xc4\xc4\xc4\xc4\xbf",
 		"\xb3 Out of Memory! \xb3",
 		"\xc0\xc4\xc4\xc4\xc4\xc4\xc4\xc4\xc4\xc4\xc4\xc4\xc4\xc4\xc4\xc4\xc4\xd9"
+#else
+		"##################",
+		"# Out of Memory! #",
+		"##################"
+#endif
 	};
 	int x, y;
 	char savbuf[108];

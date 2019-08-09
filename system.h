@@ -12,6 +12,11 @@
 #endif
 #endif
 
+#if !defined IBMPC && !defined DOSV && !defined NEC98 && !defined FMR
+# define IBMPC 1
+#endif
+
+
 #define swap(a,b){int x=a;a=b;b=x;}
 /* ----- interrupt vectors ----- */
 #define TIMER  8
@@ -27,8 +32,8 @@
 #define COUNT (1193280L / FREQUENCY)
 #define ZEROFLAG 0x40
 #define MAXSAVES 50
-#define SCREENWIDTH  (peekb(0x40,0x4a) & 255)
-#define SCREENHEIGHT (isVGA() || isEGA() ? peekb(0x40,0x84)+1 : 25)
+#define SCREENWIDTH  video_columns
+#define SCREENHEIGHT video_rows
 #define clearBIOSbuffer() *(unsigned short far *)(MK_FP(0x40,0x1a)) = \
 		        	      *(unsigned short far *)(MK_FP(0x40,0x1c));
 #define waitforkeyboard() while ((keyportvalue & 0x80) == 0) \

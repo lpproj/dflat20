@@ -145,6 +145,7 @@ BOOL init_messages(void)
 	set_mousetravel(0, SCREENWIDTH-1, 0, SCREENHEIGHT-1);
 	savecursor();
 	hidecursor();
+    get_videomode();
     px = py = -1;
     pmx = pmy = -1;
     mx = my = 0;

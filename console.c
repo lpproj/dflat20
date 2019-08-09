@@ -13,12 +13,20 @@ static int altconvert[] = {
 
 unsigned video_mode;
 unsigned video_page;
+unsigned video_columns = 80;
+unsigned video_rows = 25;
 
 static int near cursorpos[MAXSAVES];
 static int near cursorshape[MAXSAVES];
 static int cs;
 
 static union REGS regs;
+
+void getscreensize(void)
+{
+    video_columns = *(unsigned short far *)MK_FP(0x40, 0x4a) & 0xff;
+    video_rows = (isVGA() || isEGA() ? *(unsigned char far *)MK_FP(0x40, 0x84) +1U : 25);
+}
 
 /* ------------- clear the screen -------------- */
 void clearscreen(void)
@@ -108,6 +116,7 @@ void videomode(void)
     video_page = regs.x.bx;
     video_page &= 0xff00;
     video_mode &= 0x7f;
+    getscreensize();
 }
 
 /* ------ position the cursor ------ */
@@ -248,6 +257,7 @@ void Set25(void)
 		regs.x.ax = 0x1111;
     regs.h.bl = 0;
     int86(VIDEO, &regs, &regs);
+    getscreensize();
 }
 
 /* ---------- set 43 line mode ------- */
@@ -258,6 +268,7 @@ void Set43(void)
     regs.x.ax = 0x1112;
     regs.h.bl = 0;
     int86(VIDEO, &regs, &regs);
+    getscreensize();
 }
 
 /* ---------- set 50 line mode ------- */
@@ -268,6 +279,7 @@ void Set50(void)
     regs.x.ax = 0x1112;
     regs.h.bl = 0;
     int86(VIDEO, &regs, &regs);
+    getscreensize();
 }
 
 /* ------ convert an Alt+ key to its letter equivalent ----- */

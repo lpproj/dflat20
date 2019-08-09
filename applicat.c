@@ -685,6 +685,7 @@ static void SelectLines(WINDOW wnd)
 /* ---- set the screen height in the video hardware ---- */
 static void SetScreenHeight(int height)
 {
+#if defined IBMPC
     if (isEGA() || isVGA())    {
         SendMessage(NULL, SAVE_CURSOR, 0, 0);
         switch (height)    {
@@ -704,6 +705,7 @@ static void SetScreenHeight(int height)
         SendMessage(NULL, RESET_MOUSE, 0, 0);
         SendMessage(NULL, SHOW_MOUSE, 0, 0);
     }
+#endif
 }
 
 #ifdef INCLUDE_WINDOWOPTIONS

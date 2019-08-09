@@ -9,6 +9,15 @@ int WatchIconProc(WINDOW wnd, MESSAGE msg, PARAM p1, PARAM p2)
 	static char *hands[] = {
 		" \xc0 ", " \xda ", " \xbf ", " \xd9 "
 	};
+    static char *border = "\xcd";
+
+#if !defined IBMPC
+    hands[0][1] = dfc_tickhand0;
+    hands[1][1] = dfc_tickhand1;
+    hands[2][1] = dfc_tickhand2;
+    hands[3][1] = dfc_tickhand3;
+    border[0] = dfc_dbl_h;
+#endif
     switch (msg)    {
         case CREATE_WINDOW:
 			tick = 0;
@@ -29,7 +38,7 @@ int WatchIconProc(WINDOW wnd, MESSAGE msg, PARAM p1, PARAM p2)
             return TRUE;
         case BORDER:
             rtn = DefaultWndProc(wnd, msg, p1, p2);
-            writeline(wnd, "\xcd", 2, 0, FALSE);
+            writeline(wnd, border, 2, 0, FALSE);
             return rtn;
         case MOUSE_MOVED:
             SendMessage(wnd, HIDE_WINDOW, 0, 0);

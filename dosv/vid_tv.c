@@ -4,6 +4,7 @@
 #if defined DOSV
 # define TOPVIEW 1
 #endif
+#include "graphchr.h"
 
 #if !defined pTab
 # define pTab ('\t' + 0x80)
@@ -267,7 +268,7 @@ void get_videomode(void)
             snowy = cfg.snowy;
     }
 #if TOPVIEW
-    if (tv_address == NULL) {
+    {
         union REGS regs;
         struct SREGS sregs;
         regs.h.ah = 0xfe;
@@ -278,6 +279,20 @@ void get_videomode(void)
         topview = (sregs.es != video_address || regs.x.di);
         if (topview) {
             snowy = FALSE;
+            /* reserve bottom line for FEP (IME) on DOS/V text mode */
+            regs.x.ax = 0x4900;
+            int86x(0x15, &regs, &regs, &sregs);
+            if (regs.h.ah == 0) {
+                /* check already reserved bottom line(s) */
+                regs.x.ax = 0x1d02;
+                regs.x.bx = 0;
+                int86x(VIDEO, &regs, &regs, &sregs);
+                video_rows = *(unsigned char far *)MK_FP(0x40, 0x84) + (regs.x.bx != 0);
+            }
+            set_graphchr_cp932();
+        }
+        else {
+            set_graphchr_cp437();
         }
     }
 #endif

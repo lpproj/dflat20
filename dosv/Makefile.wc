@@ -59,7 +59,11 @@ OBJS_12 = $(OPATH)text.$(O) $(OPATH)radio.$(O) $(OPATH)box.$(O)
 OBJS_13 = $(OPATH)spinbutt.$(O) $(OPATH)watch.$(O) $(OPATH)slidebox.$(O)
 OBJS_14 = $(OPATH)direct.$(O) $(OPATH)editor.$(O)
 
-#OBJS_DBCS = $(OPATH)graphchr.obj
+OBJS_DBCS = &
+	$(OPATH)graphchr.obj &
+	$(OPATH)graph437.obj &
+	$(OPATH)graph932.obj &
+	$(OPATH)graphasc.obj
 
 OBJS_DFLAT = &
 	$(OBJS_1) $(OBJS_2) $(OBJS_3) $(OBJS_4) $(OBJS_5) &
@@ -245,6 +249,15 @@ $(OPATH)editor.$(O): $(SPATH)editor.c
 
 $(OPATH)graphchr.obj: $(SPATH)graphchr.c
 	$(COMPILE) $(SPATH)graphchr.c
+
+$(OPATH)graphasc.obj: $(SPATH)graphasc.c
+	$(COMPILE) $(SPATH)graphasc.c
+
+$(OPATH)graph437.obj: $(SPATH)graph437.c
+	$(COMPILE) $(SPATH)graph437.c
+
+$(OPATH)graph932.obj: $(SPATH)graph932.c
+	$(COMPILE) $(SPATH)graph932.c
 
 
 # OBJS_MEMOPAD

@@ -1,8 +1,10 @@
 /* ------------- editor.c ------------ */
 #include "dflat.h"
 
+#if !defined pTab
 #define pTab ('\t' + 0x80)
 #define sTab ('\f' + 0x80)
+#endif
 
 /* ---------- SETTEXT Message ------------ */
 static int SetTextMsg(WINDOW wnd, char *Buf)

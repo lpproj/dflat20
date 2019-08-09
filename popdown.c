@@ -90,7 +90,11 @@ static void PaintMsg(WINDOW wnd)
     SendMessage(wnd, CLEARTEXT, 0, 0);
     wnd->selection = wnd->mnu->Selection;
     while (pd1->SelectionTitle != NULL)    {
+#if defined IBMPC
         if (*pd1->SelectionTitle == LINE)
+#else
+        if (*pd1->SelectionTitle == SEPCHAR[0])
+#endif
             SendMessage(wnd, ADDTEXT, (PARAM) sep, 0);
         else    {
             int len;

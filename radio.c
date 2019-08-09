@@ -21,7 +21,7 @@ int RadioButtonProc(WINDOW wnd, MESSAGE msg, PARAM p1, PARAM p2)
             case PAINT:    {
                 char rb[] = "( )";
                 if (ct->setting)
-                    rb[1] = 7;
+                    rb[1] = RADIOBUTTONCHAR;
                 SendMessage(wnd, CLEARTEXT, 0, 0);
                 SendMessage(wnd, ADDTEXT, (PARAM) rb, 0);
                 SetFocusCursor(wnd);

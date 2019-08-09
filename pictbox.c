@@ -7,7 +7,51 @@ typedef struct    {
     RECT rc;
 } VECT;
 
+#if defined IBMPC
 unsigned char CharInWnd[] = "\xc4\xb3\xda\xbf\xd9\xc0\xc5\xc3\xb4\xc1\xc2";
+#else
+/*                                0h  1v  2dr 3dl 4ul 5ur 6vh 7vr 8vl 9uh 10dh 11initflag */
+unsigned char CharInWndLocal[] = "\xc4\xb3\xda\xbf\xd9\xc0\xc5\xc3\xb4\xc1\xc2\xff";
+unsigned char CharInWnd[] =      "\xc4\xb3\xda\xbf\xd9\xc0\xc5\xc3\xb4\xc1\xc2";
+
+static void SetCharInWndLocal(void)
+{
+    if (CharInWndLocal[11] != '\0') {
+        CharInWndLocal[0] = dfc_h;
+        CharInWndLocal[1] = dfc_v;
+        CharInWndLocal[2] = dfc_dr;
+        CharInWndLocal[3] = dfc_dl;
+        CharInWndLocal[4] = dfc_ul;
+        CharInWndLocal[5] = dfc_ur;
+        CharInWndLocal[6] = dfc_vh;
+        CharInWndLocal[7] = dfc_vr;
+        CharInWndLocal[8] = dfc_vl;
+        CharInWndLocal[9] = dfc_uh;
+        CharInWndLocal[10] = dfc_dh;
+        CharInWndLocal[11] = '\0';
+    }
+}
+static unsigned char ConvCharInWndToLocal(unsigned char ch)
+{
+    unsigned i;
+    for(i=0; i<sizeof(CharInWnd) - 1; ++i) {
+        if (ch == CharInWnd[i]) {
+            return CharInWndLocal[i];
+        }
+    }
+    return ch;
+}
+static unsigned char ConvCharInWndFromLocal(unsigned char ch)
+{
+    unsigned i;
+    for(i=0; i<sizeof(CharInWndLocal) - 1; ++i) {
+        if (ch == CharInWndLocal[i]) {
+            return CharInWnd[i];
+        }
+    }
+    return ch;
+}
+#endif
 
 unsigned char VectCvt[3][11][2][4] = {
     {   /* --- first character in collision vector --- */
@@ -50,6 +94,7 @@ unsigned char VectCvt[3][11][2][4] = {
              {{"\xc1\xc1\xc1"},     {"\xc5\xc5\xc1"}},
              {{"\xc2\xc2\xc2"},     {"\xc2\xc2\xc2"}}    }
 };
+
 
 /* -- compute whether character is first, middle, or last -- */
 static int FindVector(WINDOW wnd, RECT rc, int x, int y)
@@ -104,6 +149,9 @@ static void PaintVector(WINDOW wnd, RECT rc)
     unsigned int newch;
     static int cw, fml, vertvect, coll;
 
+#if !defined IBMPC
+    SetCharInWndLocal();
+#endif
     if (rc.rt == rc.lf)    {
         /* ------ vertical vector ------- */
         nc = '\xb3';
@@ -126,6 +174,9 @@ static void PaintVector(WINDOW wnd, RECT rc)
             xi = i;
         ch = videochar(GetClientLeft(wnd)+rc.lf+xi,
                     GetClientTop(wnd)+rc.tp+yi);
+#if !defined IBMPC
+        ch = ConvCharInWndFromLocal(ch);
+#endif
         for (cw = 0; cw < sizeof(CharInWnd); cw++)    {
             if (ch == CharInWnd[cw])    {
                 /* ---- hit another vector character ---- */
@@ -141,17 +192,34 @@ static void PaintVector(WINDOW wnd, RECT rc)
                 }
             }
         }
+#if defined IBMPC
 		PutWindowChar(wnd, newch, rc.lf+xi, rc.tp+yi);
+#else
+        PutWindowChar(wnd, ConvCharInWndToLocal(newch), rc.lf+xi, rc.tp+yi);
+#endif
     }
 }
 
 static void PaintBar(WINDOW wnd, RECT rc, enum VectTypes vt)
 {
     int i, vertbar, len;
+#if defined IBMPC
     unsigned int tys[] = {219, 178, 177, 176};
 /*    unsigned int tys[] = {'\xdb', '\xb2', '\xb1', '\xb0'};
 */
     unsigned int nc = tys[vt-1];
+#else
+    unsigned char nc = ' ';
+
+    switch(vt) {
+        case SOLIDBAR: nc = dfc_solidbar; break;
+        case HEAVYBAR: nc = dfc_heavybar; break;
+        case CROSSBAR: nc = dfc_crossbar; break;
+        case LIGHTBAR: nc = dfc_lightbar; break;
+        default:
+            return;
+    }
+#endif
 
     if (rc.rt == rc.lf)    {
         /* ------ vertical bar ------- */
