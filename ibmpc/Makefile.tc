@@ -1,5 +1,8 @@
 # 
-# Makefile for Turbo C 2.0/Turbo C++ 1.01 (with Trubo make)
+# Makefile for Turbo C 2.0/Turbo C++ 1.01/Borland C++ (with Turbo make)
+
+#memory model
+MODEL=l
 
 # srcdir
 SDIR  = ..
@@ -10,7 +13,7 @@ SPDIR = .
 CC = tcc
 CFLAGS = -I$(SPDIR) -I$(SDIR) @opts.tc -DIBMPC
 LD = tcc
-LDFLAGS = -ml -f-
+LDFLAGS = -m$(MODEL) -f-
 
 SPATH = $(SDIR)\\
 SPPATH = $(SPDIR)\\
@@ -30,7 +33,7 @@ COMPILE = $(CC) $(CFLAGS) -c -o$<
 
 #
 
-LIBDFLAT = $(OPATH)dflat.lib
+LIBDFLAT = $(OPATH)dflat2$(MODEL)b.lib
 
 SRC_VIDEO = $(SPATH)video.c
 OBJ_VIDEO = $(OPATH)video.obj

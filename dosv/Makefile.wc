@@ -1,6 +1,9 @@
 # 
 # Makefile for (Open)Watcom with wmake
 
+#memory model
+MODEL=l
+
 # srcdir
 SDIR  = ..
 # srcdir for platform-specific: ($srcdir/platform)
@@ -10,7 +13,7 @@ SPDIR = .
 CC = *wcl
 CFLAGS = -wcd=1180 -wcd=1181 -bt=dos -zq -s -j -ml -os -I$(SPDIR) -I$(SDIR) -DWATCOM -DTESTING_DFLAT -DBUILD_FULL_DFLAT -DDOSV -DDBCS
 LD = *wcl
-LDFLAGS = -zq -ml -l=dos -"op stack=5120"
+LDFLAGS = -zq -m$(MODEL) -l=dos -"op stack=5120"
 
 !ifdef __UNIX__
 D=/
@@ -39,7 +42,7 @@ COMPILE = $(CC) $(CFLAGS) -c -Fo=$@
 
 #
 
-LIBDFLAT = $(OPATH)dflat.lib
+LIBDFLAT = $(OPATH)dflat2$(MODEL)w.lib
 
 SRC_VIDEO = $(SPPATH)vid_tv.c
 OBJ_VIDEO = $(OPATH)video.$(O)
@@ -60,6 +63,7 @@ OBJS_13 = $(OPATH)spinbutt.$(O) $(OPATH)watch.$(O) $(OPATH)slidebox.$(O)
 OBJS_14 = $(OPATH)direct.$(O) $(OPATH)editor.$(O)
 
 OBJS_DBCS = &
+	$(OPATH)mbstr.obj &
 	$(OPATH)graphchr.obj &
 	$(OPATH)graph437.obj &
 	$(OPATH)graph932.obj &
@@ -246,6 +250,9 @@ $(OPATH)editor.$(O): $(SPATH)editor.c
 
 # OBJS_DBCS
 # -----------------------------
+
+$(OPATH)mbstr.obj: $(SPATH)mbstr.c
+	$(COMPILE) $(SPATH)mbstr.c
 
 $(OPATH)graphchr.obj: $(SPATH)graphchr.c
 	$(COMPILE) $(SPATH)graphchr.c

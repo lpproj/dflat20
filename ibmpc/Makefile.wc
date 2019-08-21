@@ -2,6 +2,9 @@
 # Makefile for (Open)Watcom with wmake
 # todo: build host-specific helpmaker (huffc.exe and fixhelp.exe)
 
+#memory model
+MODEL=l
+
 # srcdir
 SDIR  = ..
 # srcdir for platform-specific: ($srcdir/platform)
@@ -11,7 +14,7 @@ SPDIR = .
 CC = *wcl
 CFLAGS = -bt=dos -zq -s -j -ml -os -I$(SPDIR) -I$(SDIR) -DWATCOM -DTESTING_DFLAT -DBUILD_FULL_DFLAT -DIBMPC
 LD = *wcl
-LDFLAGS = -zq -ml -l=dos -"op stack=4096"
+LDFLAGS = -zq -m$(MODEL) -l=dos -"op stack=4096"
 
 !ifdef __UNIX__
 D=/
@@ -40,7 +43,7 @@ COMPILE = $(CC) $(CFLAGS) -c -Fo=$@
 
 #
 
-LIBDFLAT = $(OPATH)dflat.lib
+LIBDFLAT = $(OPATH)dflat2$(MODEL)w.lib
 
 SRC_VIDEO = $(SPATH)video.c
 OBJ_VIDEO = $(OPATH)video.$(O)

@@ -1,5 +1,8 @@
 # 
-# Makefile for Turbo C 2.0/Turbo C++ 1.01 (with Trubo make)
+# Makefile for Turbo C 2.0/Turbo C++ 1.01/Borland C++ (with Turbo make)
+
+#memory model
+MODEL=l
 
 # srcdir
 SDIR  = ..
@@ -10,7 +13,7 @@ SPDIR = .
 CC = tcc
 CFLAGS = -I$(SPDIR) -I$(SDIR) @opts.tc -DDOSV -DDBCS
 LD = tcc
-LDFLAGS = -ml -f-
+LDFLAGS = -m$(MODEL) -f-
 
 SPATH = $(SDIR)\\
 SPPATH = $(SPDIR)\\
@@ -30,7 +33,7 @@ COMPILE = $(CC) $(CFLAGS) -c -o$<
 
 #
 
-LIBDFLAT = $(OPATH)dflat.lib
+LIBDFLAT = $(OPATH)dflat2$(MODEL)b.lib
 
 SRC_VIDEO = $(SPPATH)vid_tv.c
 OBJ_VIDEO = $(OPATH)video.obj
@@ -51,6 +54,7 @@ OBJS_13 = $(OPATH)spinbutt.obj $(OPATH)watch.obj $(OPATH)slidebox.obj
 OBJS_14 = $(OPATH)direct.obj $(OPATH)editor.obj
 
 OBJS_DBCS = \
+	$(OPATH)mbstr.obj \
 	$(OPATH)graphchr.obj \
 	$(OPATH)graph437.obj \
 	$(OPATH)graph932.obj \
@@ -238,6 +242,10 @@ $(OPATH)editor.obj: $(SPATH)editor.c
 
 # OBJS_DBCS
 # -----------------------------
+
+$(OPATH)mbstr.obj: $(SPATH)mbstr.c
+	$(COMPILE) $(SPATH)mbstr.c
+
 
 $(OPATH)graphchr.obj: $(SPATH)graphchr.c
 	$(COMPILE) $(SPATH)graphchr.c
