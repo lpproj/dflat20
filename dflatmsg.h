@@ -46,6 +46,9 @@ DFlatMsg(SAVE_CURSOR)      /* save the cursor's configuration*/
 DFlatMsg(RESTORE_CURSOR)     /* restore the saved cursor     */
 DFlatMsg(SHIFT_CHANGED)      /* the shift status changed     */
 DFlatMsg(WAITKEYBOARD)     /* waits for a key to be released */
+#if DBCS
+DFlatMsg(KEYBOARD_DBCHAR)    /* Double-Byte char was inputed */
+#endif
 /* ---------------- mouse messages ------------------------- */
 DFlatMsg(RESET_MOUSE)        /* reset the mouse              */
 DFlatMsg(MOUSE_TRAVEL)       /* set the mouse travel         */

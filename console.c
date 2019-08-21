@@ -65,12 +65,18 @@ BOOL keyhit(void)
 #endif
 #endif
 
+/* ---- yield (wait for a event)  ---- */
+void dos_yield(void)
+{
+    int86(0x28, &regs, &regs);
+}
+
 /* ---- Read a keystroke ---- */
 int getkey(void)
 {
     int c;
     while (keyhit() == FALSE)
-        ;
+        dos_yield();
     if (((c = bioskey(0)) & 0xff) == 0)
         c = (c >> 8) | 0x1080;
     else

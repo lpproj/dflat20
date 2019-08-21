@@ -258,10 +258,23 @@ static void near collect_events(void)
             else if (c == INS)
                 c = SHIFT_INS;
         }
+
+#if DBCS
+        if ((unsigned)c <= 0xff && is_dbcslead(c & 0xff) && keyhit()) {
+            int c2 = getkey();
+            PostEvent(KEYBOARD_DBCHAR, ((unsigned)(c & 0xff) << 8) | (c2 & 0xff), sk);
+        }
+        else {
+            if (c != '\r' && ((unsigned)c < ' ' || (unsigned)c > 0xff))
+                clearBIOSbuffer();
+            PostEvent(KEYBOARD, c, sk);
+        }
+#else
 		if (c != '\r' && (c < ' ' || c > 127))
 			clearBIOSbuffer();
         /* ------ post the keyboard event ------ */
         PostEvent(KEYBOARD, c, sk);
+#endif
     }
 
     /* ------------ test for mouse events --------- */
@@ -615,6 +628,9 @@ BOOL dispatch_message(void)
         switch (ev.event)    {
             case SHIFT_CHANGED:
             case KEYBOARD:
+#if DBCS
+            case KEYBOARD_DBCHAR:
+#endif
 				if (!handshaking)
 	                SendMessage(Kwnd, ev.event, ev.mx, ev.my);
                 break;

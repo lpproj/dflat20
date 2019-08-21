@@ -3,8 +3,10 @@
 
 #define EditBufLen(wnd) (isMultiLine(wnd) ? EDITLEN : ENTRYLEN)
 #define SetLinePointer(wnd, ln) (wnd->CurrLine = ln)
+#if !DBCS
 #define Ch(c) ((c)&0x7f)
 #define isWhite(c) (Ch(c)==' '||Ch(c)=='\n'||Ch(c)=='\f'||Ch(c)=='\t')
+#endif
 /* ---------- local prototypes ----------- */
 static void SaveDeletedText(WINDOW, char *, int);
 static void Forward(WINDOW);
@@ -23,6 +25,31 @@ static BOOL KeyBoardMarking, ButtonDown;
 static BOOL TextMarking;
 static int ButtonX, ButtonY;
 static int PrevY = -1;
+
+#if DBCS
+static int isWhite(char c)
+{
+    return (c==' '||c=='\n'||c=='\f'||c=='\t'||c==pTab||c==sTab);
+}
+
+static int adjustCurrCol(WINDOW wnd, int col, int trail)
+{
+    char *cp = TextLine(wnd, wnd->CurrLine);
+    if (cp) {
+        char *cp_cur = cp + col;
+        char *cp_prev = CharPrev(cp, cp_cur);
+        char *cp_cur2 = CharNext(cp_prev);
+        if (trail && cp_cur2 == cp_cur) {
+            cp_cur2 = CharNext(cp_cur2) - 1;
+            if (*cp_cur2) col = cp_cur2 - cp;
+        }
+        else if (!trail && cp_cur2 > cp_cur) {
+            col = cp_prev - cp;
+        }
+    }
+    return col;
+}
+#endif
 
 /* ----------- CREATE_WINDOW Message ---------- */
 static int CreateWindowMsg(WINDOW wnd)
@@ -117,7 +144,11 @@ static int SetTextLengthMsg(WINDOW wnd, unsigned int len)
 /* ----------- KEYBOARD_CURSOR Message ---------- */
 static void KeyboardCursorMsg(WINDOW wnd, PARAM p1, PARAM p2)
 {
+#if DBCS
+    wnd->CurrCol = adjustCurrCol(wnd, (int)p1 + wnd->wleft, 0);
+#else
     wnd->CurrCol = (int)p1 + wnd->wleft;
+#endif
     wnd->WndRow = (int)p2;
     wnd->CurrLine = (int)p2 + wnd->wtop;
     if (wnd == inFocus)	{
@@ -181,10 +212,22 @@ static int HorizScrollMsg(WINDOW wnd, PARAM p1)
             wnd->CurrCol == wnd->wleft && *currchar == '\n'))  {
         rtn = BaseWndProc(EDITBOX, wnd, HORIZSCROLL, p1, 0);
         if (rtn != FALSE)    {
+#if DBCS
+            char *cp = TextLine(wnd, wnd->CurrLine);
+            unsigned clen = mblen_loose(cp + wnd->CurrCol);
+            if (wnd->CurrCol < wnd->wleft) {
+                wnd->CurrCol += clen;
+            }
+            else if (WndCol >= ClientWidth(wnd)) {
+                char *cp1 = CharPrev(cp, cp + wnd->CurrCol);
+                wnd->CurrCol = cp1 - cp;
+            }
+#else
             if (wnd->CurrCol < wnd->wleft)
                 wnd->CurrCol++;
             else if (WndCol == ClientWidth(wnd))
                 --wnd->CurrCol;
+#endif
             SendMessage(wnd,KEYBOARD_CURSOR,WndCol,wnd->WndRow);
         }
     }
@@ -225,7 +268,11 @@ static void ExtendBlock(WINDOW wnd, int x, int y)
     int len = (int) (strchr(lp, '\n') - lp);
     x = max(0, min(x, len));
 	y = max(0, y);
+#if DBCS
+    wnd->BlkEndCol = adjustCurrCol(wnd, x + wnd->wleft, 1);
+#else
     wnd->BlkEndCol = min(len, x+wnd->wleft);
+#endif
     wnd->BlkEndLine = y+wnd->wtop;
     bbl = min(wnd->BlkBegLine, wnd->BlkEndLine);
     bel = max(wnd->BlkBegLine, wnd->BlkEndLine);
@@ -289,6 +336,11 @@ static int LeftButtonMsg(WINDOW wnd, PARAM p1, PARAM p2)
             MouseX = 0;
             SendMessage(wnd, KEYBOARD, HOME, 0);
         }
+#if DBCS
+        else {
+            MouseX = adjustCurrCol(wnd, MouseX + wnd->wleft, 0) - wnd->wleft;
+        }
+#endif
         ButtonDown = TRUE;
         ButtonX = MouseX;
         ButtonY = MouseY;
@@ -301,6 +353,7 @@ static int LeftButtonMsg(WINDOW wnd, PARAM p1, PARAM p2)
     if (isMultiLine(wnd) ||
         (!TextBlockMarked(wnd)
             && MouseX+wnd->wleft < strlen(wnd->text)))
+#
         wnd->CurrCol = MouseX+wnd->wleft;
     SendMessage(wnd, KEYBOARD_CURSOR, WndCol, wnd->WndRow);
     return TRUE;
@@ -462,7 +515,11 @@ static void DelKey(WINDOW wnd)
     }
     if (isMultiLine(wnd) && *currchar == '\n' && *(currchar+1) == '\0')
         return;
+#if DBCS
+    strcpy(currchar, currchar + mblen_loose(currchar));
+#else
     strcpy(currchar, currchar+1);
+#endif
     if (repaint)    {
         BuildTextPointers(wnd);
         SendMessage(wnd, PAINT, 0, 0);
@@ -507,7 +564,11 @@ static void ShiftTabKey(WINDOW wnd, PARAM p2)
 static void KeyTyped(WINDOW wnd, int c)
 {
     char *currchar = CurrChar;
-    if ((c != '\n' && c < ' ') || (c & 0x1000))
+#if DBCS
+    if ((c != '\n' && (unsigned)c < ' ') || (c & OFFSET))
+#else
+    if ((c != '\n' && c < ' ') || (c & OFFSET))
+#endif
         /* ---- not recognized by editor --- */
         return;
     if (!isMultiLine(wnd) && TextBlockMarked(wnd))    {
@@ -554,6 +615,10 @@ static void KeyTyped(WINDOW wnd, int c)
         else
             wnd->textwidth = max(wnd->textwidth,
                 strlen(wnd->text));
+#if DBCS
+        /* workaround: modify the buffer before redraw */
+        *currchar = c;
+#endif
         WriteTextLine(wnd, NULL,
             wnd->wtop+wnd->WndRow, FALSE);
     }
@@ -693,6 +758,24 @@ static int KeyboardMsg(WINDOW wnd, PARAM p1, PARAM p2)
 		beep();
     return TRUE;
 }
+#if DBCS
+/* ----------- Double-Byte Character Message ---------- */
+static int KeyboardDBChar(WINDOW wnd, PARAM p1, PARAM p2)
+{
+    int rtn;
+    char s[4];
+
+    s[0] = (unsigned)p1 >> 8;
+    s[1] = (unsigned char)p1;
+    s[2] = '\0';
+    rtn = PasteText(wnd, s, 2);
+    if (rtn) {
+        Forward(wnd);
+        SendMessage(wnd, PAINT, 0, 0);
+    }
+    return rtn;
+}
+#endif
 /* ----------- SHIFT_CHANGED Message ---------- */
 static void ShiftChangedMsg(WINDOW wnd, PARAM p1)
 {
@@ -957,6 +1040,12 @@ int EditBoxProc(WINDOW wnd, MESSAGE msg, PARAM p1, PARAM p2)
             if (KeyboardMsg(wnd, p1, p2))
                 return TRUE;
             break;
+#if DBCS
+        case KEYBOARD_DBCHAR:
+            if (KeyboardDBChar(wnd, p1, p2))
+                return TRUE;
+            break;
+#endif
         case SHIFT_CHANGED:
             ShiftChangedMsg(wnd, p1);
             break;
@@ -981,7 +1070,14 @@ static void SaveDeletedText(WINDOW wnd, char *bbl, int len)
 /* ---- cursor right key: right one character position ---- */
 static void Forward(WINDOW wnd)
 {
+#if DBCS
+    unsigned clen = mblen_loose(CurrChar);
+    char *cc;
+
+    cc = CurrChar + clen;
+#else
     char *cc = CurrChar+1;
+#endif
     if (*cc == '\0')
         return;
     if (*CurrChar == '\n')    {
@@ -989,9 +1085,18 @@ static void Forward(WINDOW wnd)
         Downward(wnd);
     }
     else    {
+#if DBCS
+        unsigned clen2 = mblen_loose(cc);
+        wnd->CurrCol += clen;
+        if (WndCol + clen2 > ClientWidth(wnd)) {
+            clen2 = clen + clen2 - 1;
+            while(clen2--) SendMessage(wnd, HORIZSCROLL, TRUE, 0);
+        }
+#else
         wnd->CurrCol++;
         if (WndCol == ClientWidth(wnd))
             SendMessage(wnd, HORIZSCROLL, TRUE, 0);
+#endif
     }
 }
 /* ----- stick the moving cursor to the end of the line ---- */
@@ -1000,6 +1105,13 @@ static void StickEnd(WINDOW wnd)
     char *cp = TextLine(wnd, wnd->CurrLine);
     char *cp1 = strchr(cp, '\n');
     int len = cp1 ? (int) (cp1 - cp) : 0;
+#if DBCS
+    char *cp_prev = CharPrev(cp, cp + wnd->CurrCol);
+    char *cp_cur = CharNext(cp_prev);
+    if (cp_cur > cp + wnd->CurrCol) {
+        wnd->CurrCol = (cp_prev - cp);
+    }
+#endif
     wnd->CurrCol = min(len, wnd->CurrCol);
     if (wnd->wleft > wnd->CurrCol)    {
         wnd->wleft = max(0, wnd->CurrCol - 4);
@@ -1037,9 +1149,21 @@ static void Upward(WINDOW wnd)
 static void Backward(WINDOW wnd)
 {
     if (wnd->CurrCol)    {
+#if DBCS
+        char *cp = TextLine(wnd, wnd->CurrLine);
+        char *cp1 = CharPrev(cp, cp + wnd->CurrCol);
+        int currcol = cp1 - cp;
+        if (currcol < wnd->wleft) {
+            unsigned scrl_cnt = wnd->wleft - currcol;
+            --wnd->CurrCol;
+            while(scrl_cnt--) SendMessage(wnd, HORIZSCROLL, FALSE, 0);
+        }
+        wnd->CurrCol = currcol;
+#else
         --wnd->CurrCol;
         if (wnd->CurrCol < wnd->wleft)
             SendMessage(wnd, HORIZSCROLL, FALSE, 0);
+#endif
     }
     else if (isMultiLine(wnd) && wnd->CurrLine != 0)    {
         Upward(wnd);

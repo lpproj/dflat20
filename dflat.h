@@ -54,6 +54,10 @@ typedef enum {FALSE, TRUE} BOOL;
 #define ENTRYLEN     256  /* starting length for one-liner  */
 #define GROWLENGTH    64  /* buffers grow by this much      */
 
+#if DBCS
+#include "mbstr.h"
+#endif
+
 #include "system.h"
 #include "config.h"
 #include "rect.h"
